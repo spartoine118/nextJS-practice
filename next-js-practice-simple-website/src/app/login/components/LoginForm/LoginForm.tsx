@@ -1,17 +1,13 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import TextInputLabel from "../TextInputLabelComponent/TextInputLabel";
-import { useAppSelector } from "@/app/redux/hooks";
-import { selectUserState } from "../../state/user.state";
 
 export default function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const userState = useAppSelector(selectUserState);
 
   const onLoginFormSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     console.log(username);
-    console.log(userState);
   };
 
   return (
