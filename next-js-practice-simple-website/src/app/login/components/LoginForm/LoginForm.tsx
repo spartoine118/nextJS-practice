@@ -1,13 +1,26 @@
+"use client";
 import { ChangeEvent, FormEvent, useState } from "react";
-import TextInputLabel from "../TextInputLabelComponent/TextInputLabel";
+import TextInputLabel from "../../../shared/components/TextInputLabelComponent/TextInputLabel";
+import ButtonComponent from "@/app/shared/components/ButtonComponent/ButtonComponent";
+import { signIn } from "next-auth/react";
+
+async function authenticate(username: string, password: string) {
+  const res = await signIn("credentials", {
+    callbackUrl: "/",
+    username: username,
+    password: password,
+  });
+}
 
 export default function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const onLoginFormSubmit = (e: FormEvent<HTMLFormElement>): void => {
+  const onLoginFormSubmit = async (
+    e: FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
-    console.log(username);
+    await authenticate(username, password);
   };
 
   return (
@@ -29,12 +42,7 @@ export default function LoginForm() {
         label="Password"
         placeholder="Enter a password"
       />
-      <button
-        className="w-min border-2 border-red-300 p-2 hover:border-red-400 hover:bg-red-400 hover:ease-in duration-100 rounded"
-        type="submit"
-      >
-        Login
-      </button>
+      <ButtonComponent text={"Login"} type="submit" />
     </form>
   );
 }

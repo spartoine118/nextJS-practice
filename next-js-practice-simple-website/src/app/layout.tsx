@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import NavigationBar from "./navigation-bar/NavigationBar";
-import { Provider } from "react-redux";
-
+import AuthProvider from "./shared/components/AuthProvider/AuthProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -18,10 +17,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <NavigationBar />
-        {children}
-      </body>
+      <AuthProvider>
+        <body className={inter.className}>
+          <NavigationBar />
+          {children}
+        </body>
+      </AuthProvider>
     </html>
   );
 }

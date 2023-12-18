@@ -10,7 +10,7 @@ async function run() {
     await client.db("user-reg-antoine").command({ ping: 1 });
     console.log("Connected to DB");
   } finally {
-    await client.close();
+    // await client.close();
   }
 }
 
