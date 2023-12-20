@@ -1,17 +1,27 @@
 import NextAuth, { AuthOptions, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import dbConnection from "../../../database/connection";
-import { UserType } from "@/app/database/types/user-types";
+import {
+  connectedDatabase,
+  disconnectDatabase,
+} from "../../../../database/connection";
+import { UserType, UserTypeWithId } from "@/database/types/user-types";
 
 const authOptions: AuthOptions = {
   pages: { signIn: "/login" },
+  session: { strategy: "jwt" },
   callbacks: {
-    session({ session, token, user }) {
-      return session; // The return type will match the one returned in `useSession()`
-    },
-    async jwt({ token }) {
-      token.userRole = "user";
+    async jwt({ token, user, account, profile }) {
+      if (user) {
+        return { ...token, user: user };
+      }
       return token;
+    },
+    async session({ session, token, user }) {
+      if (token.user) {
+        session.user = token.user;
+        return { ...session, user: token.user };
+      }
+      return session; // The return type will match the one returned in `useSession()`
     },
   },
   providers: [
@@ -30,24 +40,29 @@ const authOptions: AuthOptions = {
         },
       },
       async authorize(credentials, req) {
-        const query: Partial<UserType> = {
+        const query: Partial<UserTypeWithId> = {
           email: credentials?.username,
           password: credentials?.password,
         };
-        const data = await dbConnection.collection("users").findOne(query);
+
+        const dbConnection = await connectedDatabase();
+
+        const data = await dbConnection
+          .collection<UserType>("users")
+          .findOne(query);
 
         if (data) {
           // Any object returned will be saved in `user` property of the JWT
           const user = {
-            id: data._id,
-            username: ,
-            email: credentials?.username,
+            id: data._id.toString(),
+            name: `${data.firstName} ${data.lastName}`,
+            email: data.email,
           };
-          console.log(user);
           return user;
         } else {
           // If you return null then an error will be displayed advising the user to check their details.
           return null;
+
           // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
         }
       },

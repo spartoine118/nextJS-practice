@@ -1,10 +1,11 @@
-import Link from "next/link";
+import PostList from "../components/posts/home/components/post-list/PostList";
 
-export default async function Home() {
+const home = () => {
   return (
-    <div>
-      <Link href={"/login"}>Go to Login</Link>
-      <Link href={`/user/profile/${"abcd"}`}>Go to user profile</Link>
+    <div className="flex justify-center">
+      <PostList />
     </div>
   );
-}
+};
+
+export default home;
